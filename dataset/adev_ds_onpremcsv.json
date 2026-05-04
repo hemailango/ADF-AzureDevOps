@@ -1,0 +1,31 @@
+{
+	"name": "adev_ds_onpremcsv",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adev_lns_onpremcsv",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"fileName": {
+					"value": "@dataset().param_filename",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

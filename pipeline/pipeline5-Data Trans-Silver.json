@@ -1,0 +1,34 @@
+{
+	"name": "pipeline5-Data Trans-Silver",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow-DataTrans-Silver",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "Data Transformation-Silver",
+						"type": "DataFlowReference"
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2026-05-01T02:27:34Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

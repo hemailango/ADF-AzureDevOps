@@ -1,0 +1,168 @@
+{
+	"name": "Data Serving Top5 Flight",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"linkedService": {
+						"referenceName": "adev_lns_adls",
+						"type": "LinkedServiceReference"
+					},
+					"name": "DimFlight"
+				},
+				{
+					"linkedService": {
+						"referenceName": "adev_lns_adls",
+						"type": "LinkedServiceReference"
+					},
+					"name": "FactBooking"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "adev_lns_adls",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkNulldata"
+				},
+				{
+					"linkedService": {
+						"referenceName": "adev_lns_adls",
+						"type": "LinkedServiceReference"
+					},
+					"name": "sinkTop5Flight"
+				}
+			],
+			"transformations": [
+				{
+					"name": "joinDimFlight"
+				},
+				{
+					"name": "splitnulldata"
+				},
+				{
+					"name": "selectCol"
+				},
+				{
+					"name": "window"
+				},
+				{
+					"name": "aggregateticketcost"
+				},
+				{
+					"name": "filtertop5"
+				},
+				{
+					"name": "alterRowNulldata"
+				},
+				{
+					"name": "alterRowTopFlight"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          flight_id as short,",
+				"          flight_number as string,",
+				"          departure_timestamp as string,",
+				"          arrival_timestamp as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'DimFlight') ~> DimFlight",
+				"source(output(",
+				"          booking_id as integer,",
+				"          passenger_id as integer,",
+				"          flight_id as integer,",
+				"          airline_id as integer,",
+				"          origin_airport_id as integer,",
+				"          destination_airport_id as integer,",
+				"          booking_date as date,",
+				"          ticket_cost as integer,",
+				"          flight_duration_mins as integer,",
+				"          checkin_status as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'silver',",
+				"     folderPath: 'FactBooking') ~> FactBooking",
+				"FactBooking, DimFlight join(FactBooking@flight_id == DimFlight@flight_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> joinDimFlight",
+				"selectCol split(!isNull(flight_number),",
+				"     isNull(flight_number),",
+				"     disjoint: false) ~> splitnulldata@(GoodData, NullData)",
+				"joinDimFlight select(mapColumn(",
+				"          booking_id,",
+				"          passenger_id,",
+				"          flight_id = FactBooking@flight_id,",
+				"          airline_id,",
+				"          origin_airport_id,",
+				"          destination_airport_id,",
+				"          booking_date,",
+				"          ticket_cost,",
+				"          flight_duration_mins,",
+				"          checkin_status,",
+				"          flight_number,",
+				"          departure_timestamp,",
+				"          arrival_timestamp",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> selectCol",
+				"aggregateticketcost window(desc(Total_ticket_cost, true),",
+				"     Top = denseRank()) ~> window",
+				"splitnulldata@GoodData aggregate(groupBy(flight_number),",
+				"     Total_ticket_cost = sum(ticket_cost)) ~> aggregateticketcost",
+				"window filter(Top < 6) ~> filtertop5",
+				"splitnulldata@NullData alterRow(insertIf(1==1)) ~> alterRowNulldata",
+				"filtertop5 alterRow(insertIf(1==1)) ~> alterRowTopFlight",
+				"alterRowNulldata sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'nulldata',",
+				"     overwrite: true,",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkNulldata",
+				"alterRowTopFlight sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     format: 'delta',",
+				"     fileSystem: 'gold',",
+				"     folderPath: 'Business View Top5Flight',",
+				"     overwrite: true,",
+				"     mergeSchema: false,",
+				"     autoCompact: false,",
+				"     optimizedWrite: false,",
+				"     vacuum: 0,",
+				"     deletable: false,",
+				"     insertable: true,",
+				"     updateable: false,",
+				"     upsertable: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkTop5Flight"
+			]
+		}
+	}
+}

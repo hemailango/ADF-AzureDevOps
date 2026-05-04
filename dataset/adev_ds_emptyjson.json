@@ -1,0 +1,21 @@
+{
+	"name": "adev_ds_emptyjson",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adev_lns_adls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "empty.json",
+				"folderPath": "monitor/emptyjson",
+				"fileSystem": "bronze"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

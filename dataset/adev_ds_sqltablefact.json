@@ -1,0 +1,13 @@
+{
+	"name": "adev_ds_sqltablefact",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "adev_lns_sqltaables",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
