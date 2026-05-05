@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adev-adfproj"
+		},
+		"adev_lns_adls_accountKey": {
+			"value": ""
+		},
+		"adev_lns_onpremcsv_password": {
+			"value": ""
+		},
+		"adev_lns_sqltaables_password": {
+			"value": ""
+		},
+		"adev_lns_adls_properties_typeProperties_url": {
+			"value": "https://adevprojstorage.dfs.core.windows.net/"
+		},
+		"adev_lns_github_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
+		"adev_lns_onpremcsv_properties_typeProperties_host": {
+			"value": "C:\\Users\\hemai\\Hema\\Azure\\ADF-DevOps"
+		},
+		"adev_lns_onpremcsv_properties_typeProperties_userId": {
+			"value": "hemai_2"
+		},
+		"adev_lns_sqltaables_properties_typeProperties_server": {
+			"value": "adev-sqldb-server.database.windows.net"
+		},
+		"adev_lns_sqltaables_properties_typeProperties_database": {
+			"value": "adev_sqldb"
+		},
+		"adev_lns_sqltaables_properties_typeProperties_userName": {
+			"value": "smadmin"
+		}
+	}
+}
